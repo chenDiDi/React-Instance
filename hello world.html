@@ -5,10 +5,61 @@
     <meta charset="utf-8" />
 </head>
 <body>
-
+    <div id="root">
+        <!--应用渲染的位置-->
+    </div>
+    <div id="app">
+        <!--应用渲染的位置-->
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.6.1/react.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.6.1/react-dom.js"></script>
+    <script>
+        ReactDOM.render(
+            React.DOM.h1(
+                {id: 'my-firstDemo'},
+                React.DOM.span(null, React.DOM.em(null, 'react ')),
+                'hello world!'
+            ),
+            document.getElementById('app')
+        );
+        var Component = React.createClass({
+            propTypes: {
+              name: React.PropTypes.string.isRequired,
+              age: React.PropTypes.number.isRequired,
+              text: React.PropTypes.string,
+            },
+            getDefaultProps: function () {
+              return {
+                  name: 'nonon',
+                  age: 12,
+                  text: '',
+              }
+            },
+            getInitialState: function () {
+              return {
+                  text: this.props.text,
+              }
+            },
+            _textChange: function (ev) {
+                console.log(ev.target.value);
+              this.setState({
+                  text: ev.target.value,
+              });
+            },
+            render: function () {
+                return React.DOM.div(null,
+                    React.DOM.span(null, "componentDid  " + this.props.name+ this.props.age+ "  " + this.state.text.length),
+                    React.DOM.textarea({
+                        value: this.state.text,
+                        onChange: this._textChange,
+                    })
+                )
+            }
+        });
+        ReactDOM.render(
+            React.createElement(Component, {name: 'didi'}),
+            document.getElementById('root')
+        );
+    </script>
 </body>
 </html>
-ReactDOM.render(
-    <h1>HELLO WORLD!</h1>,
-    document.getElementById('root');
-);
