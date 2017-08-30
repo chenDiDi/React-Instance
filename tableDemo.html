@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>TableDemoDocument</title>
+    <style>
+        .rowStyle {
+            display: block;
+            border: 1px solid #e9e9e9;
+        }
+        .trStyle {
+            display: inline-block;
+            width: 200px;
+            text-align: left;
+            cursor: pointer;
+        }
+        .trStyle300 {
+            width: 300px;
+        }
+    </style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.6.1/react.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.6.1/react-dom.js"></script>
+<script>
+    var headers = ["header1", "header2", "header3", "header4"];
+    var data = [
+        ['ctrl+F4 ctrl+F4 111', '作者： 222 ', '链接：http://www.imooc.com/article/12498', '来源：慕课网'],
+        ['ctrl+D ctrl+shift+ 2222','作者： 333','链接：http://www.imooc.com/article/12498','来源：慕课网'],
+        ['ctrl+D ctrl+shift+ 3333','作者： 111','链接：http://www.imooc.com/article/12498','来源：慕课网'],
+        ['ctrl+D ctrl+shift+ 4444','作者： 666','链接：http://www.imooc.com/article/12498','来源：慕课网'],
+        ['ctrl+D ctrl+shift+ 5555','作者： 555','链接：http://www.imooc.com/article/12498','来源：慕课网']
+    ];
+    var Excel = React.createClass({
+        displayName: 'Excel',
+        propTypes: {
+            headers: React.PropTypes.arrayOf(
+                React.PropTypes.string
+            ),
+            initialData: React.PropTypes.arrayOf(
+                React.PropTypes.arrayOf(
+                    React.PropTypes.string
+                )
+            )
+        },
+        getInitialState: function () {
+          return {
+              data: this.props.initialData,
+              sortby: null,   //当前选中的列
+              descending: false   //标记，升息或者降序
+          }
+        },
+        // 升息或者降序
+        _sort: function(e){
+            var column = e.target.cellIndex;
+            var data = this.state.data.slice();
+            // 点击的当前列还是和之前的一样并且当前还不是降序的时候，进行降序处理
+            var descending = this.state.sortby === column && !this.state.descending;
+//            console.log(data, "data");
+            data.sort(function (a, b) {
+//                console.log(a[column] , b[column],"aaa");
+               return descending ? (a[column] < b[column] ? 1 : -1) : (a[column] > b[column] ? 1 : -1);
+            });
+            this.setState({
+                data:data,
+                sortby: column,
+                descending: descending
+            });
+        },
+        render: function () {
+            var that = this;
+            return (
+              React.DOM.table(null,
+                React.DOM.thead(
+                  {
+                      onClick: this._sort
+                  },
+                  React.DOM.tr({
+                      className: 'rowStyle'
+                  },
+                    this.props.headers.map(function (title, key) {
+                        if(that.state.sortby === key){
+                            title+= that.state.descending ? '\u2191':'\u2193';
+                        }
+                        return React.DOM.th({key: key,className: key===2?'trStyle trStyle300':'trStyle'}, title);
+                    })
+                  )
+                ),
+                  React.DOM.tbody(null,
+                    this.state.data.map(function (row, idr) {
+                        return (
+                            React.DOM.tr({
+                                    key: idr,
+                                    className: 'rowStyle'
+                                },
+                                row.map(function (cell,key) {
+                                    return React.DOM.td({key: key,className: key===2?'trStyle trStyle300':'trStyle'}, cell);
+                                })
+                            )
+                        )
+                    })
+                  )
+              )
+            );
+        }
+    })
+    ReactDOM.render(
+        React.createElement(Excel, {
+            headers: headers,
+            initialData: data
+        }),
+        document.getElementById("root")
+    );
+</script>
+</body>
+</html>
