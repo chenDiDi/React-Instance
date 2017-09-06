@@ -1,0 +1,16 @@
+{
+  "name": "ApplicationDev",
+  "dependencies": {
+    "babel-cli": "^6.26.0",
+    "browserify": "^14.4.0"
+  },
+  "devDependencies": {
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "cssshrink": "0.0.5",
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1",
+    "uglify": "^0.1.5",
+    "watch": "^1.0.2"
+  }
+}

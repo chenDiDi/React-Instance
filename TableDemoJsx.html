@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>JSXTableDemoDocument</title>
+    <style>
+        .rowStyle {
+            display: block;
+            border: 1px solid #e9e9e9;
+        }
+        .trStyle {
+            display: inline-block;
+            width: 200px;
+            text-align: left;
+            cursor: pointer;
+        }
+        .trStyle300 {
+            width: 300px;
+        }
+        .toolbar {
+            padding: 10px 20px 10px 20px;
+            height: 47px;
+            line-height: 30px;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 20px;
+            background: #3498db;
+            background-image: linear-gradient(to bottom, #3498db, #2980b9);
+            box-shadow: 0px 1px 3px #666666;
+            color: #fff;
+            border: none;
+            margin-bottom: 20px;
+            margin-right: 10px;
+            text-decoration: none;
+            outline: none;
+        }
+        .toolbar:hover,
+        .toolbar:active {
+            background-image: linear-gradient(to bottom, #3cb0fd, #3498db);
+        }
+    </style>
+</head>
+<body>
+<div id="root"></div>
+<script src="react/build/react.js"></script>
+<script src="react/build/react-dom.js"></script>
+<script src="babel/browser.js"></script>
+<script type="text/babel">
+    let headers = ["header1", "header2", "header3", "header4"];
+    let data = [
+        ['ctrl+F4 ctrl+F4 111', '作者： 222 ', '链接：http://www.imooc.com/article/12498', '来源：慕课网'],
+        ['ctrl+D ctrl+shift+ 2222','作者： 333','链接：http://www.imooc.com/article/12498','来源：慕课网'],
+        ['ctrl+D ctrl+shift+ 3333','作者： 111','链接：http://www.imooc.com/article/12498','来源：慕课网'],
+        ['ctrl+D ctrl+shift+ 4444','作者： 666','链接：http://www.imooc.com/article/12498','来源：慕课网'],
+        ['ctrl+D ctrl+shift+ 5555','作者： 555','链接：http://www.imooc.com/article/12498','来源：慕课网']
+    ];
+    let Excel = React.createClass({
+        displayName: 'Excel',
+        _preSearchData: null,   // 搜索结果过滤后的数据
+        propTypes: {
+            headers: React.PropTypes.arrayOf(
+                React.PropTypes.string
+            ),
+            initialData: React.PropTypes.arrayOf(
+                React.PropTypes.arrayOf(
+                    React.PropTypes.string
+                )
+            )
+        },
+        getInitialState: function () {
+          return {
+              data: this.props.initialData,
+              sortby: null,   //当前选中的列
+              descending: false,   //标记，升息或者降序
+              edit: null,  // {row: index, cell: index}
+              search: false
+          }
+        },
+        // 升序或者降序
+        _sort: function(e){
+            let column = e.target.cellIndex;
+            let data = this.state.data.slice();
+            // 点击的当前列还是和之前的一样并且当前还不是降序的时候，进行降序处理
+            let descending = this.state.sortby === column && !this.state.descending;
+//            console.log(data, "data");
+            data.sort(function (a, b) {
+//                console.log(a[column] , b[column],"aaa");
+               return descending ? (a[column] < b[column] ? 1 : -1) : (a[column] > b[column] ? 1 : -1);
+            });
+            this.setState({
+                data:data,
+                sortby: column,
+                descending: descending
+            });
+        },
+        // 当用户双击的时候，单元格变成可编辑的input框
+        _showEditor: function (e) {
+            this.setState({
+                edit: {row: parseInt(e.target.dataset.row, 10), cell: e.target.cellIndex}
+            })
+        },
+        // 输入后保存值
+        _save: function(e) {
+            e.preventDefault();   // 避免浏览器默认行为，如提交表单后的网页重新加载
+            let input = e.target.firstChild;
+            // 复制一份数据，避免直接操作this.state
+            let data = this.state.data.slice();
+            data[this.state.edit.row][this.state.edit.cell] = input.value;
+            this.setState({
+                edit: null,  // 完成编辑
+                data: data
+            });
+        },
+        // 搜索功能
+        _toggleSearch: function () {
+            if (this.state.search) {
+                this.setState({
+                    data: this._preSearchData,
+                    search: false
+                })
+            } else {
+                this._preSearchData = this.state.data;   // 复制一份完整的数据，避免在搜索之后丢失数据
+                this.setState({search: true});
+            }
+        },
+        // 表格数据下载功能
+        _download: function (format, ev) {
+            let contents = format === 'json' ?
+              JSON.stringify(this.state.data)
+              : this.state.data.reduce(function (result, row) {
+                  console.log(result,"rowresult");
+                  return result + row.reduce(function (rowresult, cell, idx) {
+                          console.log(rowresult,"cellresult");
+                      return rowresult
+                          + '"'
+                          + cell.replace(/"/g, '""')
+                          + '"'
+                          + (idx < row.length -1 ? ',' : '');
+                  }, '')
+                  + "\n";
+              }, '');
+//          console.log(contents,"contetns");
+            let URL = window.URL || window.webkitURL;
+//          console.log(URL);
+            let blob = new Blob([contents], {type: 'text/' + format});
+          ev.target.href = URL.createObjectURL(blob);
+          ev.target.download = 'data.' + format;
+        },
+        _renderToolbar: function () {
+            return (
+                <div>
+                    <button className="toolbar" onClick={this._toggleSearch}>search</button>
+                    <a href="data.json" className="toolbar" onClick={this._download.bind(this, 'json')}>Export JSON</a>
+                    <a href="data.csv" className="toolbar" onClick={this._download.bind(this, 'csv')}>Export csv</a>
+                </div>
+            );
+        },
+        _search: function (e) {
+            let needle = e.target.value.toLowerCase();
+            // 搜索字符为空时，显示原始数据
+            if (!needle) {
+                this.setState({
+                    data: this._preSearchData
+                });
+                return null;
+            }
+            let idx = e.target.dataset.idx;
+            let searchdata = this._preSearchData.filter(function (row) {
+                console.log(row[idx].toString().toLowerCase().indexOf(needle), idx, "row");
+                return (
+                    row[idx].toString().toLowerCase().indexOf(needle) > -1
+                )
+            });
+            this.setState({data: searchdata});
+        },
+        // 搜索input栏
+        _renderSearch: function () {
+            if (!this.state.search) {
+                return null;
+            }
+            return (
+                <tr onChange={this._search}>
+                    {this.props.headers.map((_ignore, idx) => {
+                        return (
+                                <td key={idx}><input type="text" data-idx={idx} /></td>
+                            )
+                        })
+                    }
+                </tr>
+            );
+        },
+        _renderTable: function () {
+            return (
+              <table>
+                  <thead onClick={this._sort}>
+                    <tr className="rowStyle">
+                        {this.props.headers.map((title, key) => {
+                            if(this.state.sortby === key){
+                                title+= this.state.descending ? '\u2191':'\u2193';
+                            }
+                            return (
+                                    <th key={key} className={key===2?'trStyle trStyle300':'trStyle'}>{title}</th>
+                                )
+                            })
+                        }
+                    </tr>
+                  </thead>
+                  <tbody onDoubleClick={this._showEditor}>
+                    {this._renderSearch()}
+                    {this.state.data.map((row, rowidx) => {
+                            return (
+                                <tr key={rowidx} className="rowStyle">
+                                    {row.map((cell, cellidx) => {
+                                        let content = cell;
+                                        const edit = this.state.edit;
+                                        if (edit && edit.row === rowidx && edit.cell === cellidx) {
+                                            content = (
+                                                <form onSubmit={this._save}>
+                                                    <input type="text" style={{width: '100%'}} defaultValue={cell} />
+                                                </form>
+                                            );
+//                                        console.log(content,"content");
+                                        }
+                                        return (
+                                            <td key={cellidx} data-row={rowidx} className={cellidx===2?'trStyle trStyle300':'trStyle'}>
+                                                {content}
+                                            </td>
+                                        );
+                                    })}
+                                </tr>
+                            )
+                        })
+                    }
+                  </tbody>
+              </table>
+            );
+        },
+        render: function () {
+            return (
+                <div>
+                    {this._renderToolbar()}
+                    {this._renderTable()}
+                </div>
+            );
+        }
+    });
+    ReactDOM.render(
+        React.createElement(Excel, {
+            headers: headers,
+            initialData: data
+        }),
+        document.getElementById("root")
+    );
+</script>
+</body>
+</html>
