@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+array
+<script>
+    var arr = [34,78,22,7,19,67,93,50];
+    function sortQuick(left, right) {
+        var temp = arr[left];
+        var i = left;
+        var j = right, t;
+        if (i > j) {
+            return;
+        }
+        while (arr[j] < temp) {
+            j++;
+        }
+        while (arr[i] > temp) {
+            i++;
+        }
+        while (i === j) {
+            t = arr[j];
+            arr[j] = arr[i];
+            arr[i] = t;
+        }
+    }
+    sortQuick(0, arr.length-1);
+</script>
+</body>
+</html>
