@@ -1,4 +1,7 @@
 # the React Instance of Learning
+
+[以中文查看](./README.md)
+
 ### Share the examples I did on the react learning.
 - development tools: WebStorm
 - technology stack: React, Webpack, Redux, Es6.
