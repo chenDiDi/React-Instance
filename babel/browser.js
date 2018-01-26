@@ -40946,7 +40946,7 @@ module.exports.matchToToken = function(match) {
 
 },{}],432:[function(_dereq_,module,exports){
 // json5.js
-// Modern JSON. See README.md for details.
+// Modern JSON. See README-EN.md for details.
 //
 // This file is based directly off of Douglas Crockford's json_parse.js:
 // https://github.com/douglascrockford/JSON-js/blob/master/json_parse.js
