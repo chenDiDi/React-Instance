@@ -5,7 +5,10 @@
 import { connect } from 'react-redux';
 import ToDoApp from '../components/ToDoApp.js';
 import {
-    inputChange
+    inputChange,
+    inputSubmit,
+    deleteList,
+    onListItemClick
 } from '../redux/modules/toDoApp'; // we added this
 
 function mapStateToProps(state) {
@@ -16,7 +19,10 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
     return {
-        // inputChange: (value) => dispatch(inputChange(value))    // we added this     // TODO
+        inputChange: (value) => dispatch(inputChange(value)),  // we added this
+        inputSubmit: () => dispatch(inputSubmit()),
+        deleteList: (index) => dispatch(deleteList(index)),
+        onListItemClick: (index) => dispatch(onListItemClick(index))
     };
 }
 

@@ -5,8 +5,9 @@
 import { createStore, applyMiddleware, combineReducers } from 'redux';
 import { createLogger } from 'redux-logger';
 
-const loggerMiddleware = createLogger(); // initialize logger
-const createStoreWithMiddleware = applyMiddleware(loggerMiddleware)(createStore); // apply logger to redux
+// const loggerMiddleware = createLogger(); // initialize logger
+const createStoreWithMiddleware = applyMiddleware()(createStore); // apply logger to redux
+// const createStoreWithMiddleware = applyMiddleware(loggerMiddleware)(createStore); // apply logger to redux
 
 import toDoApp from './modules/toDoApp';
 
